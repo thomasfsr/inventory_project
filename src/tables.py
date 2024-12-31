@@ -25,11 +25,11 @@ class InventoryItem:
 
     id: Mapped[int] = mapped_column(init=False, primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
-    item_name: Mapped[str] = mapped_column(String(100))
+    name: Mapped[str] = mapped_column(String(100))
+    description: Mapped[str] = mapped_column(String(100), nullable=True)
+    location: Mapped[str] = mapped_column(String(100), nullable=True)
     quantity: Mapped[float] = mapped_column(Numeric(10,2))
-    units: Mapped[str]= mapped_column(String(10))
-    image_url: Mapped[str] = mapped_column(String(255), nullable=True)
-    user: Mapped[User] = relationship("User", back_populates="inventory_items")
+    unit: Mapped[str]= mapped_column(String(10))
     created_at: Mapped[datetime] = mapped_column(DateTime,
                                                  init=False, 
                                                  server_default=func.now(), 
@@ -39,3 +39,6 @@ class InventoryItem:
                                                  server_default=func.now(),
                                                  onupdate= func.now(),
                                                  nullable=False)
+    # image_url: Mapped[str] = mapped_column(String(255), nullable=True)
+    
+    user: Mapped[User] = relationship("User", back_populates="inventory_items")
