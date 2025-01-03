@@ -1,5 +1,8 @@
 from typing_extensions import TypedDict
 from sqlalchemy import text, inspect
+from langchain_core.runnables import RunnableConfig
+
+from src.database import get_session
 
 class AgentState(TypedDict):
     question: str
@@ -11,8 +14,9 @@ class AgentState(TypedDict):
     relevance: str
     sql_error: bool
 
-def get_database_schema(engine):
-    inspector = inspect(engine)
+def get_database_schema():
+    session = get_session()
+    inspector = inspect(session)
     schema = ""
     for table_name in inspector.get_table_names():
         schema += f"Table: {table_name}\n"
@@ -28,3 +32,12 @@ def get_database_schema(engine):
         schema += "\n"
     print("Retrieved database schema.")
     return schema
+
+def get_current_user(state: AgentState, config: RunnableConfig):
+    print("Retrieving the current user based on user ID.")
+    user_id = config["configurable"].get("current_user_id", None)
+    if not user_id:
+        state["current_user"] = "User not found"
+        print("No user ID provided in the configuration.")
+        return state
+    
